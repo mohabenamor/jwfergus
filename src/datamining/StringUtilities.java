@@ -11,40 +11,38 @@ public class StringUtilities {
 
 	public static ArrayList<String> stripTextIntoArray(String inputString) {
 		inputString = inputString.replaceAll("[#,()\"]", " ");
-		ArrayList<String> inputStringArray = new ArrayList<String>(Arrays.asList(inputString.split("(\\s++)")));
+		ArrayList<String> inputStringArray = new ArrayList<String>(
+				Arrays.asList(inputString.split("[(\\s++)\\u060C]")));
 
-		try {
-			for (int i = 0; i < inputStringArray.size(); i++) {
+		for (int i = 0; i < inputStringArray.size(); i++) {
 
-				/*
-				 * Replace URLs with top level domain
-				 */
-				if (inputStringArray.get(i).startsWith("http")) {
-					Pattern pattern = Pattern.compile(".*?([^.]+\\.[^.]+)");
+			/*
+			 * Replace URLs with top level domain
+			 */
+			if (inputStringArray.get(i).startsWith("http")) {
+				Pattern pattern = Pattern.compile(".*?([^.]+\\.[^.]+)");
+				try {
 					URI uri = new URI(inputStringArray.get(i));
-					try{
 					Matcher matcher = pattern.matcher(uri.getHost());
 					if (matcher.matches()) {
-						inputStringArray.set(i,matcher.group(1).toString());
+						inputStringArray.set(i, matcher.group(1).toString());
 					} else {
 						inputStringArray.set(i, "MALFORMED_URL");
 					}
-					}catch(NullPointerException exception){
-						inputStringArray.set(i, "MALFORMED_URL");
-					}
-				} else {
-					inputString = inputString.replaceAll(".", "");
+				} catch (Exception exception) {
+					inputStringArray.set(i, "MALFORMED_URL");
 				}
-				inputStringArray.set(i, (inputStringArray.get(i).replace(":", ""))) ;
-				if(inputStringArray.get(i).isEmpty()|| inputStringArray.get(i) == "." || inputStringArray.get(i) == "RT"){
-					inputStringArray.remove(i);
-				}
+			} else {
+				inputString = inputString.replaceAll("\\p{Punct}", "");
 			}
-		} catch (URISyntaxException e) {
-			System.out.println("*** URI Syntax Exception ***\n"
-					+ e.getMessage());
-			e.printStackTrace();
+			inputStringArray.set(i, (inputStringArray.get(i).replace(":", "")));
+			if (inputStringArray.get(i).isEmpty()
+					|| inputStringArray.get(i) == "."
+					|| inputStringArray.get(i) == "RT") {
+				inputStringArray.remove(i);
+			}
 		}
+
 		return inputStringArray;
 
 	}
