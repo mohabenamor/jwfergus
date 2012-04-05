@@ -50,7 +50,6 @@ public class ProjectCode {
             	 * Reads in the information from an individual Tweet
             	 */
                 ArrayList<String> lineAsArray = new ArrayList<String>(Arrays.asList(stringReader.split("\t")));
-                OutputWriter.writeToFile(lineAsArray);
                 String tweetID = lineAsArray.get(0);
                 String text = lineAsArray.get(1);
                 String user = lineAsArray.get(2);
@@ -75,10 +74,11 @@ public class ProjectCode {
                 /*
                  * Prints to examine data
                  */
+                /*
                 System.out.println("******** Tweet ID: " + tweetID);
                 System.out.print("User: ");
 	            System.out.println(user);
-                /*
+                
                 //Temporary for looking through input
                 BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
                 String name = null;
@@ -94,6 +94,7 @@ public class ProjectCode {
         } catch (IOException exception) {
             System.out.println("IO Exception:\n" + exception.getMessage());
         }
+      OutputWriter.writeToFile(dictionaryHashMultiset.toString());
 
     }
     
