@@ -5,6 +5,9 @@ import java.io.*;
 
 public class OutputWriter {
 
+	/**
+	 * @param line
+	 */
 	public static void writeToFile(ArrayList<String> line) {
 		try {
 			FileWriter fileWriter = new FileWriter("output.txt", true);
@@ -22,6 +25,9 @@ public class OutputWriter {
 		}
 	}
 
+	/**
+	 * @param line
+	 */
 	public static void writeToFile(String line) {
 		try {
 			FileWriter fileWriter = new FileWriter("output.txt", true);
