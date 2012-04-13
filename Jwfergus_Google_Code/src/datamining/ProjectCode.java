@@ -81,7 +81,7 @@ public class ProjectCode {
 				}
 				count++;
 
-				if (count > 1000){
+				if (count > 3000){
 					fileNumber++;
 					fileWritten = false;
 				files.add(country + "." + fileNumber + ".tsv");
@@ -195,16 +195,6 @@ public class ProjectCode {
 							}
 							instanceCountNumber++;
 						}
-						// CREATE COUNT HASH OF WORDS IN THIS INSTANCE
-						//
-						// ArrayList<String> allTweetText = new
-						// ArrayList<String>();
-						// foreach tweet
-						// allTweetText.add(text);
-						// HashMultiset<String> clusterText =
-						// HashMultiset<String>.create();
-						// clusterText.addAll(allTweetText);
-						// topics.add(clusterText);
 
 					}
 				}
