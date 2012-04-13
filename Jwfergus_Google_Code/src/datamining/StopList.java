@@ -1,0 +1,124 @@
+package datamining;
+
+import java.util.ArrayList;
+
+public class StopList {
+    public ArrayList<String> getStopList() {
+        return stopList;
+    }
+
+    private ArrayList<String> stopList;   
+    
+    public StopList(){
+        stopList = new ArrayList<String>(); 
+        stopList.add("'");
+        stopList.add("$");
+        stopList.add("%");
+        stopList.add("*");
+        stopList.add("/");
+        stopList.add("-");
+        stopList.add(";");
+        stopList.add(":");
+        stopList.add("?");
+        stopList.add(">");
+        stopList.add("=");
+        stopList.add("<");
+        stopList.add("");
+        stopList.add(".");
+        stopList.add("RT");
+        stopList.add("in");
+        stopList.add("to");
+        stopList.add("is");
+        stopList.add("on");
+        stopList.add("for");
+        stopList.add("are");
+        stopList.add("has");
+        stopList.add("by");
+        stopList.add("with");
+        stopList.add("will");
+        stopList.add("rt");
+        stopList.add("the");
+        stopList.add("of");
+        stopList.add("and");
+        stopList.add("a");
+        stopList.add("from");
+        stopList.add("that");
+        stopList.add("have");
+        stopList.add("not");
+        stopList.add("be");
+        stopList.add("we");
+        stopList.add("us");
+        stopList.add("i");
+        stopList.add("as");
+        stopList.add("this");
+        stopList.add("it");
+        stopList.add("at");
+        stopList.add("via");
+        stopList.add("you");
+        stopList.add("no");
+        stopList.add("all");
+        stopList.add("he");
+        stopList.add("says");
+        stopList.add("his");
+        stopList.add("they");
+        stopList.add("but");
+        stopList.add("...");
+        stopList.add("were");
+        stopList.add("about");
+        stopList.add("only");
+        stopList.add("2");
+        stopList.add("there");
+        stopList.add("who");
+        stopList.add("their");
+        stopList.add("its");
+        stopList.add("one");
+        stopList.add("MALFORMED_URL");
+        stopList.add("am");
+        stopList.add("was");
+        stopList.add("them");
+        stopList.add("what");
+        stopList.add("our");
+        stopList.add("if");
+        stopList.add("can");
+        stopList.add("or");
+        stopList.add("said");
+        stopList.add("an");
+        stopList.add("how");
+        stopList.add("my");
+        stopList.add("into");
+        stopList.add("so");
+        stopList.add("here");
+        stopList.add("4");
+        stopList.add("want");
+        stopList.add("him");
+        stopList.add("me");
+        stopList.add("when");
+        stopList.add("than");
+        stopList.add("do");
+        stopList.add("3");
+        stopList.add("w");
+        stopList.add("6");
+        stopList.add("would");
+        stopList.add("those");
+        stopList.add("where");
+        stopList.add("r");
+        stopList.add("u");
+        stopList.add("v");
+        stopList.add("well");
+        stopList.add("o");
+        stopList.add("g");
+        stopList.add("also");
+        stopList.add("most");
+        stopList.add("could");
+        stopList.add("1");
+        stopList.add("t");
+        stopList.add("s");
+        stopList.add("b");
+        stopList.add("then");
+        stopList.add("hes");
+        stopList.add("does");
+        stopList.add("dont");
+        stopList.add("\\");
+        
+    }
+}
