@@ -37,12 +37,70 @@ public class ProjectCode {
 
 	public static void main(String[] args) {
 
+		String country = "libya";
+		String inputFileName = System.getProperty("user.dir")
+				+ "\\src\\datamining\\samples\\" + country + ".big.tsv";
+		ArrayList<String> files = extractFileNames(country, inputFileName);
+		for (int i = 0; i < files.size()-1; i++) {
+			clusterFile(country, files.get(i));
+		}
+
+	}
+
+	private static ArrayList<String> extractFileNames(String country,
+			String inputFileName) {
+		ArrayList<String> files = new ArrayList<String>();
+		ArrayList<ArrayList<String>> summarizedListFile = new ArrayList<ArrayList<String>>();
+		HashMultiset<String> uniqueWordsInDocumentCount = HashMultiset.create();
+		long count = 0;
+		System.out.println("Looking for file at: " + inputFileName);
+		BufferedReader bufferedReader = null;
+		try {
+			FileInputStream fileInputStream = new FileInputStream(inputFileName);
+			InputStreamReader inputStreamReader = new InputStreamReader(
+					fileInputStream, "utf-8");
+			bufferedReader = new BufferedReader(inputStreamReader);
+		} catch (Exception exception) {
+			System.out.println("Exception:\n" + exception.getMessage());
+			exception.printStackTrace();
+		}
+		int fileNumber = 0;
+		Boolean fileWritten = false;
+		files.add(country + "." + fileNumber + ".tsv");
+		try {
+			String stringReader;
+			while ((stringReader = bufferedReader.readLine()) != null) {
+				if (!fileWritten) {
+					fileWritten = true;
+					WriteToFiles.writeToFile(stringReader, country + "."
+							+ fileNumber + ".tsv", false);
+				} else {
+					WriteToFiles.writeToFile(stringReader, country + "."
+							+ fileNumber + ".tsv", true);
+
+				}
+				count++;
+
+				if (count > 1000){
+					fileNumber++;
+					fileWritten = false;
+				files.add(country + "." + fileNumber + ".tsv");
+				count = 0;
+				if(fileNumber >2){
+					break;
+				}
+				}
+			}
+		} catch (IOException exception) {
+			System.out.println("IO Exception:\n" + exception.getMessage());
+		}
+		return files;
+	}
+
+	private static void clusterFile(String country, String inputFileName) {
 		long startTime = System.currentTimeMillis();
 		long endTime = 0;
 
-		String country = "libya";
-		String inputFileName = System.getProperty("user.dir")
-				+ "\\src\\datamining\\samples\\" + country + ".tsv";
 		IDFValues idfValues = idfCalculation(inputFileName);
 
 		endTime = System.currentTimeMillis();
@@ -79,31 +137,116 @@ public class ProjectCode {
 		// Using Weka now!
 		DataSource source;
 		try {
-			source = new DataSource(country + ".arff");
-			Instances data = source.getDataSet();
+
 			String[] options = weka.core.Utils.splitOptions("-P .5");
 
+			TreeMap<Double, SimpleKMeans> clusteringTreeMap = new TreeMap<Double, SimpleKMeans>();
+
+			// Should start file loop
+			source = new DataSource(country + ".arff");
+			Instances data = source.getDataSet();
 			SimpleKMeans simpleKMeans = new SimpleKMeans();
 			for (int j = 1; j < 7; j++) {
-				options = weka.core.Utils.splitOptions("-N 25 -P");
+				options = weka.core.Utils.splitOptions("-N 10 -P -O");
 				simpleKMeans.setOptions(options);
 				simpleKMeans.setSeed(j * 9);
 				simpleKMeans.buildClusterer(data);
-				WriteToFiles.writeToFile(
-						"SumSquaredError:" + simpleKMeans.getSquaredError(),
-						country + "-output" + j + ".txt", false);
+				clusteringTreeMap.put(simpleKMeans.getSquaredError(),
+						simpleKMeans);
+				WriteToFiles
+						.writeToFile(
+								"SumSquaredError:"
+										+ simpleKMeans.getSquaredError(),
+								inputFileName + country + "-output" + j
+										+ ".txt", false);
 
-				WriteToFiles.writeToFile(simpleKMeans.toString(), country
-						+ "-output" + j + ".txt", true);
+				WriteToFiles.writeToFile(simpleKMeans.toString(), inputFileName
+						+ country + "-output" + j + ".txt", true);
 				endTime = System.currentTimeMillis();
 				System.out.println("SimpleKMeans " + j + ": "
 						+ ((endTime - startTime) / 1000));
+
 			}
+
+			ArrayList<HashMultiset<String>> topics = new ArrayList<HashMultiset<String>>();
+			int numberOfUsableClusters = 0;
+			Iterator<Double> iterateThroughViableClusters = clusteringTreeMap
+					.keySet().iterator();
+			while (numberOfUsableClusters < 50
+					&& iterateThroughViableClusters.hasNext()) {
+				SimpleKMeans clusterer = clusteringTreeMap
+						.get(iterateThroughViableClusters.next());
+				int[] sizes = clusterer.getClusterSizes();
+				int[] assignments = clusterer.getAssignments();
+				ArrayList<ArrayList<Integer>> clusterInstances = new ArrayList<ArrayList<Integer>>();
+				for (int i = 0; i < sizes.length; i++) {
+					clusterInstances.add(new ArrayList<Integer>());
+				}
+				int numberOfUsefulClusters = 0;
+				for (int i = 0; i < sizes.length; i++) {
+					if (sizes[i] < 200 && sizes[i] > 24) {
+						numberOfUsefulClusters++;
+						int instanceCountNumber = 0;
+						for (int clusterNumber : assignments) {
+
+							if (clusterNumber == i) {
+								clusterInstances.get(i)
+										.add(instanceCountNumber);
+							}
+							instanceCountNumber++;
+						}
+						// CREATE COUNT HASH OF WORDS IN THIS INSTANCE
+						//
+						// ArrayList<String> allTweetText = new
+						// ArrayList<String>();
+						// foreach tweet
+						// allTweetText.add(text);
+						// HashMultiset<String> clusterText =
+						// HashMultiset<String>.create();
+						// clusterText.addAll(allTweetText);
+						// topics.add(clusterText);
+
+					}
+				}
+				System.out.println("Number of useful clusters: "
+						+ numberOfUsefulClusters);
+				HashMultiset<String> attributesInThisTopic = HashMultiset
+						.create();
+				for (int i = 0; i < sizes.length; i++) {
+					if (sizes[i] < 200 && sizes[i] > 24) {
+						ArrayList<Integer> topicInstances = clusterInstances
+								.get(i);
+						Iterator<Integer> iterateThroughInstances = topicInstances
+								.iterator();
+						while (iterateThroughInstances.hasNext()) {
+							Integer instanceIndex = iterateThroughInstances
+									.next();
+							for (int k = 0; k < data.get(
+									instanceIndex.intValue()).numValues(); k++) {
+								attributesInThisTopic.add(data
+										.get(instanceIndex.intValue())
+										.attributeSparse(k).name());
+							}
+						}
+					}
+				}
+				topics.add(attributesInThisTopic);
+			}
+			WriteToFiles.writeToFile("Topics: ", inputFileName + "topics.txt",
+					false);
+			for (int i = 0; i < topics.size(); i++) {
+				WriteToFiles.writeToFile(topics.get(i).toString(),
+						inputFileName + "topics.txt", true);
+			}
+
+			// Iterate through topics and display the top 25 words from each
+			// topic
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		//
 		// PRINTING TIME
 		//
@@ -169,9 +312,10 @@ public class ProjectCode {
 			while (attributeLocationIterator.hasNext()) {
 
 				Integer attributeLocation = attributeLocationIterator.next();
-				 if (attributeLocationToTFIDF.get(attributeLocation) > 2 &&
-				 attributeLocationToTFIDF.get(attributeLocation)<6) {
-//				if (attributeLocationToTFIDF.get(attributeLocation) > 3) {
+				if (attributeLocationToTFIDF.get(attributeLocation) > 1.5
+						&& attributeLocationToTFIDF.get(attributeLocation) < 6) {
+					// if (attributeLocationToTFIDF.get(attributeLocation) > 3)
+					// {
 
 					instanceWritten = true;
 					thisInstance += attributeLocation
@@ -281,6 +425,7 @@ public class ProjectCode {
 		} catch (IOException exception) {
 			System.out.println("IO Exception:\n" + exception.getMessage());
 		}
+		System.out.println(count);
 
 		return new IDFValues(count, uniqueWordsInDocumentCount,
 				summarizedListFile);

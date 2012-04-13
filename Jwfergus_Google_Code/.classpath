@@ -5,6 +5,5 @@
 	<classpathentry kind="lib" path="src/guava-11.0.2.jar"/>
 	<classpathentry kind="lib" path="src/jsoup-1.6.2.jar"/>
 	<classpathentry kind="lib" path="src/weka.jar"/>
-	<classpathentry kind="lib" path="src/moa.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
