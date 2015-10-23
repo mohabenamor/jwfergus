@@ -1,0 +1,1 @@
+Just a centralized location to store my small musings.
